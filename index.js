@@ -1,122 +1,159 @@
-// TODO: Include packages needed for this application
-const inquirerNPM = require("inquirer");
-const fsNPM = require ("fs");
-const generateMarkdown = require("./utils/generateMarkdown");
+// DEPENDENCIES
+// ---------------------------------------------------------------------------
 
+const fs = require("fs");
+const inquirer = require("inquirer");
+const emailValidator = require('email-validator');
+const generateMarkdown = require('./utils/generateMarkdown');
 
-// TODO: Create an array of questions for user input
-// referenced this SOF page: https://stackoverflow.com/questions/57321266/how-to-test-inquirer-validation, very close to actual solution
+// ARRAY OF QUESTIONS
+// ---------------------------------------------------------------------------
+
 const questions = [
-
+    // Github Username
     {
-        name: 'username',
-        message: 'Please enter your GitHub username, exactly how it reads on Github',
         type: 'input',
-        validate: function (answer) {
-            if (answer.length <= 1) {
-              return console.log ("I'm sorry, but we need you to enter your Github username in order to proceed.");
-            }
-            return true;
-        }
+        name: 'github',
+        message: 'What is the name of your Github username?',
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter your Github username.' }
+        },
     },
-
+    // Email Address
     {
-        name: 'title',
-        message: 'Please enter your project title, exactly how it reads on Github ',
         type: 'input',
-        validate: function (answer) {
-            if (answer.length <= 1) {
-              return console.log ("I'm sorry, but we need you to enter your project title in order to proceed.");
-            }
-            return true;
-        }
-    },
-
-    {
-        name: 'description',
-        message: 'Please enter a description of the product. Make sure the reader can understand what the application is doing!',
-        type: 'input',
-        validate: function (answer) {
-            if (answer.length <= 1) {
-              return console.log ("I'm sorry, but we need you to enter a project description in order to proceed.");
-            }
-            return true;
-        }
-    },
-
-    {
         name: 'email',
-        message: 'Please enter your email address, preferably one you can be easily contacted at',
-        type: 'input',
-        validate: function (answer) {
-            if (answer.length <= 1) {
-              return console.log ("I'm sorry, but we need you to enter your email address in order to proceed.");
-            }
-            return true;
-        }
+        message: 'What is your preferred email address?',
+        validate: (value) => {
+            if (emailValidator.validate(value)) {
+                return true
+            } else { 
+                return 'Please enter a valid email address' }
+        },
     },
-
+    // Name of Repository
     {
-        name: 'repo',
-        message: 'Please enter your GitHub repo name, exactly how it reads on Github',
         type: 'input',
-        validate: function (answer) {
-            if (answer.length <= 1) {
-              return console.log ("I'm sorry, but we need you to enter your Github repo in order to proceed.");
-            }
-            return true;
-        }
+        name: 'repository',
+        message: 'What is the name of your repository?',
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter your repository name.' }
+        },
     },
-
+    // Title of Project
     {
+        type: 'input',
+        name: 'title',
+        message: 'What is the title of your project?',
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter your project title.' }
+        },
+    },
+    // Description of Project
+    {
+        type: 'input',
+        name: 'description',
+        message: 'Please write the description of your project.',
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter your project description.' }
+        },
+    },
+    // Project Installation
+    {
+        type: 'input',
         name: 'installation',
-        message: 'Explain how you would install?',
-        type: 'input',
+        message: 'Please enter instructions to install the program:',
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter instructions to install the program.' }
+        },
     },
-
+    // Project Usage
     {
+        type: 'input',
         name: 'usage',
-        message: 'Enter some information about how to use the project',
-        type: 'input',
+        message: 'What is the usage information of this project?',
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter project usage information.' }
+        },
     },
-
+    // Technologies
     {
+        type: 'checkbox',
+        name: 'technologies',
+        message: 'Please select the technologies that were used in this project:',
+        choices:['Angular.js','Backbone.js','Bootstrap','CSS','Django','Ember.js',"Foundation",'HTML','Go','Java','Javascript','JQuery','MongoDb','MySQL','Node.js','PHP','Python','Ruby','Underscore'],
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter project usage information.' }
+        },
+    },
+    // Project Licenses
+    {
+        type: 'list',
         name: 'license',
-        message: 'Choose your license for the project!',
-        type: 'input',
+        message: 'Please select the licenses for your project?',
         choices: ['apache-2.0', 'BSD 3-Clause "New" or "Revised"' ,'GNU General Public License v3.0', 'MIT'],
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please choose a license.' }
+        },
     },
-
+    // Contributions
     {
-        name: 'contributions',
-        message: 'Let us know how users can contribute to this project in the future',
-        input: 'type',
-    },
-
-    {
-        name: 'tests',
-        message: 'Let us know what tests you used for the project, and please provide them as well!',
         type: 'input',
+        name: 'contribution',
+        message: 'Did you have anyone contribute to your project?',
+        validate: (value) => {
+            if (value) { 
+                return true 
+            } else { 
+                return 'Please enter any contributors to the project.' }
+        },
     },
-];
+]
 
-// TODO: Create a function to write README file
+// FUNCTIONS
+// ---------------------------------------------------------------------------
+
+// Function to write the READ-ME file.
 function writeToFile(fileName, data) {
-    fsNPM.writeFile(fileName, data, (err) => {
-        if (err) throw err;
-        console.log("Creating file.");
-    });
+    fs.writeFile(fileName, data, function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('READ-ME file was successfully generated!');
+        }
+    })
 };
-    
 
-// TODO: Create a function to initialize app
+// Function to initialize program.
 function init() {
-    inquirerNPM.prompt(questions)
-    .then (answers => {
-        console.log(answers);
-        writeToFile("README.MD", generateMarkdown(answers));
-    });
-}
+    inquirer.prompt(questions).then(function (answer) {
+        writeToFile("README.md", generateMarkdown(answer));
+    })
+};
 
-// Function call to initialize app
+// Function call to initialize program.
 init();
