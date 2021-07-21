@@ -16,7 +16,7 @@
 the description of the project is that we are trying to create an app where people can look up certain maintenance jobs and they put in requests and we answer them
 ## Demo
 ![Alt text](./assets/images/readegenerator-website.gif "readegenerator")
-![DemoVideo](https://www.youtube.com/watch?v=iHxUO41jc1Y&ab_channel=mansamemesa)
+[DemoVideo](https://www.youtube.com/watch?v=iHxUO41jc1Y&ab_channel=mansamemesa)
 
 ## Program Installation
 go to app store on your phone and download fixit5
